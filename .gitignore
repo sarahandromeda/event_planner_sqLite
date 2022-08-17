@@ -1,2 +1,4 @@
+.vscode/
+__pycache__/
 note.txt
 pseudo.txt
