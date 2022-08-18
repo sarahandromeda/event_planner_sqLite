@@ -6,7 +6,10 @@ class Say:
     Class methods that print relevant messages to the console.
     """
 
-# General Display Messages
+############################
+# General Display Messages #
+############################
+
     def hello():
         print(art.header)
         time.sleep(1)
@@ -64,36 +67,78 @@ your data. Use with caution.
 
     def search_options():
         print("""
-Please enter numbers corresponding to the fields you
-would like to search.
+Please enter a number corresponding to a field to search by.
 
-    1) Search by Organizer      4) Search by Date
+    1) Search by Organizer*      4) Search by Date
 
-    2) Search by Location       5) Search by Time
+    2) Search by Location*       5) Search by Time
     
-    3) Search by Type
+    3) Search by Type*
+        
+*When searching by these fields, you can enter the full 
+value or just a single letter to return events that have 
+that single letter within the value being searched. 
+EX. Searching 'c' for location would return locations in
+Colorado, South Carolina, San Fransico as they all contain
+the letter 'c'.
         """)
     
-    def event_string(data_dict):
-        # NEED TO FIX THIS MESSAGE
-        # CHANGE THIS TO LIST ROWS IN TABLE FORM
+    def calendar_table(calendar_list):
+        """
+        Takes the list of calendars and displays as a table.
+        """
+        print("""
+----------------------
+| ID | Calendar Name |
+----------------------  
+        """)
+        for calendar in calendar_list:
+            calendar_id = calendar[0]
+            calendar_name = calendar[1]
+            print(
+                f"| {calendar_id} |" +
+                f"| {calendar_name} |"
+            )
+        print("""
+----------------------
+        """)
+
+    def event_table(data_list):
         """
         Takes a list of event dict objects, loops through them, and
-        prints a human readable string of each event.
+        displays results as a table.
         """
-        for event in data_dict:
-            event_name = event['event_name']
-            event_type = event['event_type']
-            organizer = event['organizer']
-            start_date = event['start_date']
-            formatted_time = start_date.strftime("%A, %B %-d, %Y at %-I:%M %p")
-            location = event['location']
-            print(f"""
-{organizer} is hosting {event_name}, a {event_type}, 
-on {formatted_time} in {location}!
-            """)
+        # Print table header
+        print("""
+---------------------------------------------------------------------
+| ID | Event Name | Event Type | Organizer | Location | Date | Time |
+---------------------------------------------------------------------
+        """)
+        for event in data_list:
+            event_id = event[0]
+            event_name = event[1]
+            event_type = event[2]
+            organizer = event[3]
+            location = event[4]
+            date = event[5]
+            time = event[6]
+            print(
+                f"|{event_id}|" +
+                f"|{event_name}|" +
+                f"{event_type}|" +
+                f"{organizer}" +
+                f"{location}|" +
+                f"{date}|" +
+                f"{time}|"
+            )
+        print("""
+---------------------------------------------------------------------
+        """)
+#########################
+# Input Prompt Messages #
+#########################
 
-# Input Prompt Messages
+# New Event Messages
 
     def askfor_event_name():
         print('\nPlease enter name of event.\n')
@@ -130,7 +175,36 @@ on {formatted_time} in {location}!
             'Ex. 04:30 PM\n'
             )
 
-# Confirmation and Error messages
+# Search Input Messages
+    def askfor_parameter():
+        print(
+            '\nPlease enter a search parameter.\n' + 
+            'Can be full value or partial. Case insensitive.\n'
+            )
+
+    def askfor_id():
+        print(
+            "\nPlease enter the ID number of the item you would like to select.\n"
+        )
+
+###################################
+# Confirmation and Error messages #
+###################################
+
+    def success():
+        print("\nAction Successful!\n")
+
+    def action_aborted():
+        print('\nAborting...\n')
+
+    def general_error():
+        print('\nSorry, but an error has occurred. Please try again.\n')
+
+    def selected_calendar(calendar):
+        print(f"\nYou are now working on your {calendar} calendar.\n")
+
+    def confirm_reset():
+        print('\nAre you sure you want to clear this calender? y/n\n')
 
     def confirm_deletion(selection_dict):
         print("""

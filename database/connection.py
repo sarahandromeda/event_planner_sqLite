@@ -1,7 +1,7 @@
 import os
 import sqlite3
 from sqlite3 import Error
-import main.settings as settings
+import config.settings as settings
 
 class Connection:
     def create_connection(file_name):

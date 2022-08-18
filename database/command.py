@@ -60,6 +60,16 @@ class Command:
         """
         return query_all_calendars
 
+    def select_calendar():
+        select_calendar = """
+            SELECT
+                name
+            FROM sqlite_master
+            WHERE
+                rowid = ?
+        """
+        return select_calendar
+
     def show_all_events(calendar_name):
         query_by_all = f"""
             SELECT
@@ -89,7 +99,7 @@ class Command:
                 time 
             FROM {calendar_name} 
             WHERE 
-                organizer = ?
+                organizer LIKE '%' || ? || '%'
             ORDER BY
                 date DESC,
                 time DESC;
@@ -108,7 +118,7 @@ class Command:
                 time 
             FROM {calendar_name} 
             WHERE 
-                location = ?
+                location LIKE '%' || ? || '%'
             ORDER BY
                 date DESC,
                 time DESC;

@@ -1,3 +1,6 @@
+from unittest import result
+from database.command import Command
+from display.menu import Menu
 from input_validation import InputVerification as validate
 from display.message import Say
 
@@ -6,33 +9,113 @@ class MenuInput:
     Class containing functions to request input from user
     to perform different menu tasks. 
     """
+    def menu_input(session):
+        """
+        Requests a menu input from user, executes method matching
+        the menu option to get relevant input for action.
+        """
 
-    def create_new_event():
-        pass
+        Say.show_menu()
+        menu_choice = validate.verify_menu(input())
 
-    def show_all():
-        pass
+        if menu_choice == '1':
+            MenuInput._create_new_event(session)
+        elif menu_choice == '2':
+            MenuInput._show_all(session)
+        elif menu_choice == '3':
+            MenuInput._show_upcoming(session)
+        elif menu_choice == '4':
+            MenuInput._show_past(session)
+        elif menu_choice == '5':
+            MenuInput._search_events(session)
+        elif menu_choice == '6':
+            MenuInput._delete_event(session)
+        elif menu_choice == '7':
+            MenuInput._select_diffent_calendar(session)
+        elif menu_choice == '8':
+            MenuInput._reset_calendar(session)
+        elif menu_choice == '9':
+            MenuInput._exit_session()
 
-    def show_upcoming():
-        pass
+    def _create_new_event(session):
+        """
+        Executes new_event function from NewEventInput class and
+        recieves a tuple object representing user inputted values
+        Gets SQL command from Commands class and adds new event. 
+        """
+        new_event_values = NewEventInput.new_event()
+        sql_cmd = Command.create_event(session.calendar)
+        session.cursor.execute(sql_cmd, new_event_values)
+        Say.success()
 
-    def show_past():
-        pass
+    def _show_all(session):
+        """
+        Generates SQL command string and executes command. Get
+        selection from cursor object, display results as table.
+        """
+        sql_cmd = Command.show_all_events(session.calendar)
+        session.cursor.execute(sql_cmd)
+        results = session.cursor.fetchall()
+        Say.event_table(results)
 
-    def search_events():
-        pass
+    def _show_upcoming(session):
+        sql_cmd = Command.show_upcoming_events(session.calendar)
+        session.cursor.execute(sql_cmd)
+        results = session.cursor.fetchall()
+        Say.event_table(results)
 
-    def delete_event():
+    def _show_past(session):
+        sql_cmd = Command.show_past_events(session.calendar)
+        session.cursor.execute(sql_cmd)
+        results = session.cursor.fetchall()
+        Say.event_table(results)
+
+    def _search_events(session):
+        Say.search_options()
+        results = validate.verify(input())
+        if results == '1':
+            SearchInput.get_organizer()
+        elif results == '2':
+            SearchInput.get_location()
+        elif results == '3':
+            SearchInput.get_type()
+        elif results == '4':
+            SearchInput.get_date()
+        elif results == '5':
+            SearchInput.get_time()
+
+    def _delete_event(session):
         # List all events, have user enter ID of desired event
-        pass
+        MenuInput.show_all(session)
+        Say.askfor_id()
+        event_id = validate.verify(input())
+        sql_cmd = Command.delete_event(session.calendar)
+        session.cursor.execute(sql_cmd, tuple(event_id))
+        Say.confirm_deleted(event_id)
 
-    def select_diffent_calendar():
-        pass
+    def _select_diffent_calendar(session):
+        sql_cmd = Command.show_all_calendars()
+        session.cursor.execute(sql_cmd)
+        results = session.cursor.fetchall()
+        Say.calendar_table(results)
+        Say.askfor_id()
+        calendar_id = validate.verify(input())
+        sql_calendar_select = Command.select_calendar()
+        session.cursor.execute(sql_calendar_select, calendar_id)
+        new_calendar = session.cursor.fetchone()
+        session.select_diffent_calendar(new_calendar)
+        Say.selected_calendar(new_calendar)
 
-    def reset_calendar():
-        pass
+    def _reset_calendar(session):
+        Say.confirm_reset()
+        confirm = input().lower()
+        if confirm == 'y':
+            sql_cmd = Command.delete_all_events(session.calendar)
+            session.cursor.execute(sql_cmd)
+        else:
+            Say.action_aborted()
 
-    def exit_session():
+    def _exit_session():
         pass
 
 class SearchInput:
@@ -77,25 +160,24 @@ class NewEventInput:
         Returns a dictionary object with the keys representing the
         fields and the values representing the user's data. 
         """
-        new_event = {}
+        new_event = []
 
         Say.askfor_event_name()
-        new_event['event_name'] = validate().verify(input())
+        new_event.append(validate.verify(input()))
 
         Say.askfor_event_type()
-        new_event['event_type'] = validate().verify(input())
+        new_event.append(validate.verify(input()))
 
         Say.askfor_organizer()
-        new_event['organizer'] = validate.verify(input())
+        new_event.append(validate.verify(input()))
 
         Say.askfor_location()
-        new_event['location'] = validate.verify(input())
+        new_event.append(validate.verify(input()))
 
         Say.askfor_date()
-        new_event['date'] = validate.verify_date(input())
+        new_event.append(validate.verify_date(input()))
 
         Say.askfor_time()
-        new_event['time'] = validate.verify_time(input())
+        new_event.append(validate.verify_time(input()))
 
-        return new_event
-
+        return tuple(new_event)

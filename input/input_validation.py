@@ -1,4 +1,5 @@
 import time
+import re
 from display.message import Say
 
 class InputVerification:
@@ -34,5 +35,14 @@ class InputVerification:
                 Say.invalid_time(response)
                 response = input()
         # Format time response to follow %H:%M:%S
-        response = f"{res.tm_hour}:{res.tm_min}:{res.tm_sec}"
+        response = f"{res.tm_hour}:{res.tm_min}:{res.tm_sec}0"
+        return response
+
+    def verify_menu(response):
+        while True:
+            if re.match(r"\A[1-9]\Z"):
+                break
+            else:
+                Say.invalid_input(response)
+                response = input()
         return response

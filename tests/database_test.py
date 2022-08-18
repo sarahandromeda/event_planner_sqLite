@@ -2,7 +2,7 @@ import unittest
 from unittest import TestCase
 import os
 import time
-from main import settings
+from config import settings
 from database.connection import Connection
 from database.command import Command
 
@@ -291,8 +291,10 @@ class QueryCommandTest(TestCase):
 
     def test_search_by_organizer(self):
         """
-        Tests that command returns only events with 'Sarah'
-        as the organizer. Loops through selection and asserts 
+        Test that command returns only events with 'Sarah'
+        as the organizer. Test that command returns only
+        events whose organizer has an 's' in their name.
+        Loops through selection and asserts 
         that index 2 (the organizer) is equal to 'Sarah'
         """
         cmd_string = Command.search_by_organizer('new')
@@ -301,7 +303,17 @@ class QueryCommandTest(TestCase):
         selection = self.cursor.fetchall()
         # Organizer will be the item in index 3 of selected rows
         for row in selection:
-            self.assertEqual(row[3], 'Sarah')
+            self.assertIn('Sarah', row[3])
+
+        # Test that command returns all events whose organizer has
+        # the value anywhere in the name
+        values = ('s',)
+        self.cursor.execute(cmd_string, values)
+        selection = self.cursor.fetchall()
+        print(selection)
+        # Organizer will be the item in index 3 of selected rows
+        for row in selection:
+            self.assertIn('s', row[3].lower())
         
     
     def test_search_by_location(self):
