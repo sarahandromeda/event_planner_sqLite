@@ -137,7 +137,9 @@ class Command:
                 time 
             FROM {calendar_name} 
             WHERE 
-                date = date(?)
+                date = date(?) OR
+                strftime('%m', date) = strftime('%m', date(?)) OR
+                strftime('%Y', date) = strftime('%Y', date(?))
             ORDER BY
                 date DESC,
                 time DESC;

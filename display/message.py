@@ -10,6 +10,7 @@ class Say:
 # General Display Messages #
 ############################
 
+
     def hello():
         print(art.header)
         time.sleep(1)
@@ -59,7 +60,7 @@ Enter a single number corresponsing to the choice.
 
     4) Show Past Events         9) Exit
 
-    5) Search Events
+    5) Search Events            
 
 ** This menu option is irreversible and will delete all of
 your data. Use with caution.
@@ -69,11 +70,10 @@ your data. Use with caution.
         print("""
 Please enter a number corresponding to a field to search by.
 
-    1) Search by Organizer*      4) Search by Date
+    1) Search by Organizer*      3) Search by Date
 
-    2) Search by Location*       5) Search by Time
-    
-    3) Search by Type*
+    2) Search by Location*       4) Search by Time
+
         
 *When searching by these fields, you can enter the full 
 value or just a single letter to return events that have 
@@ -87,56 +87,65 @@ the letter 'c'.
         """
         Takes the list of calendars and displays as a table.
         """
-        print("""
+        if calendar_list:
+            print("""
 ----------------------
 | ID | Calendar Name |
 ----------------------  
-        """)
-        for calendar in calendar_list:
-            calendar_id = calendar[0]
-            calendar_name = calendar[1]
-            print(
-                f"| {calendar_id} |" +
-                f"| {calendar_name} |"
-            )
-        print("""
+            """)
+            for calendar in calendar_list:
+                calendar_id = calendar[0]
+                calendar_name = calendar[1]
+                print(
+                    f"| {calendar_id} |" +
+                    f"| {calendar_name} |"
+                )
+            print("""
 ----------------------
-        """)
+            """)
+        else:
+            Say.no_data()
 
     def event_table(data_list):
         """
         Takes a list of event dict objects, loops through them, and
         displays results as a table.
         """
+        if data_list:
         # Print table header
-        print("""
+            print("""
 ---------------------------------------------------------------------
 | ID | Event Name | Event Type | Organizer | Location | Date | Time |
 ---------------------------------------------------------------------
-        """)
-        for event in data_list:
-            event_id = event[0]
-            event_name = event[1]
-            event_type = event[2]
-            organizer = event[3]
-            location = event[4]
-            date = event[5]
-            time = event[6]
-            print(
-                f"|{event_id}|" +
-                f"|{event_name}|" +
-                f"{event_type}|" +
-                f"{organizer}" +
-                f"{location}|" +
-                f"{date}|" +
-                f"{time}|"
-            )
-        print("""
+            """)
+            for event in data_list:
+                event_id = event[0]
+                event_name = event[1]
+                event_type = event[2]
+                organizer = event[3]
+                location = event[4]
+                date = event[5]
+                time = event[6]
+                print(
+                    f"|{event_id}|" +
+                    f"{event_name}|" +
+                    f"{event_type}|" +
+                    f"{organizer}|" +
+                    f"{location}|" +
+                    f"{date}|" +
+                    f"{time}|"
+                )
+            print("""
 ---------------------------------------------------------------------
-        """)
+            """)
+        else:
+            Say.no_data()
+
+
 #########################
 # Input Prompt Messages #
 #########################
+
 
 # New Event Messages
 
@@ -163,7 +172,7 @@ the letter 'c'.
     def askfor_date():
         print(
             '\nPlease enter the date of the event.\n' +
-            'Use YYYY/MM/DD format.\n'
+            'Use MM/DD/YY format.\n'
             )
 
     def askfor_time():
@@ -182,14 +191,34 @@ the letter 'c'.
             'Can be full value or partial. Case insensitive.\n'
             )
 
+    def askfor_search_date():
+        print(
+            '\nPlease enter a date to find events on, before(-),\n' +
+            'or after(+) that date.\n' + 
+            'Add an optional +/- after the date.\n' +
+            'Ex."08/30/22 +" find events after specified date.\n' +
+            '\nYou can also enter just a month number or year\n' +
+            'to find events happening in that month or year.\n'
+        )
+
+    def askfor_search_time():
+        print(
+            '\nPlease enter a time to find events happening at,\n' +
+            'before(-) or after(+) that time.\n' +
+            'Add an optional +/- after the time.\n' + 
+            'Ex."05:00 PM -" finds all events before 5 PM.\n'
+        )
+
     def askfor_id():
         print(
             "\nPlease enter the ID number of the item you would like to select.\n"
         )
 
+
 ###################################
 # Confirmation and Error messages #
 ###################################
+
 
     def success():
         print("\nAction Successful!\n")
@@ -238,7 +267,7 @@ the letter 'c'.
     def invalid_date(response):
         print(
             f'\n{response} is invalid.\n' +
-            'Please enter a date in format YYYY/MM/DD.\n'
+            'Please enter a date in format MM/DD/YY.\n'
             )
 
     def invalid_time(response):
@@ -246,3 +275,6 @@ the letter 'c'.
             f'\n{response} is invalid.\n' +
             'Please enter time in HH:MM AM (or PM) format.\n'
             )
+
+    def no_data():
+        print('\nNo data was found to be displayed.\n')

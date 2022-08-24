@@ -1,6 +1,5 @@
-from unittest import result
 from database.command import Command
-from display.menu import Menu
+from database.menu import MenuAction
 from input_validation import InputVerification as validate
 from display.message import Say
 
@@ -9,141 +8,78 @@ class MenuInput:
     Class containing functions to request input from user
     to perform different menu tasks. 
     """
-    def menu_input(session):
+    def menu_input():
         """
-        Requests a menu input from user, executes method matching
-        the menu option to get relevant input for action.
+        Displays menu options, and requests input from user. 
+        Verifies that response is a valid menu option a
+        returns the choice. 
         """
-
         Say.show_menu()
         menu_choice = validate.verify_menu(input())
+        return menu_choice
 
-        if menu_choice == '1':
-            MenuInput._create_new_event(session)
-        elif menu_choice == '2':
-            MenuInput._show_all(session)
-        elif menu_choice == '3':
-            MenuInput._show_upcoming(session)
-        elif menu_choice == '4':
-            MenuInput._show_past(session)
-        elif menu_choice == '5':
-            MenuInput._search_events(session)
-        elif menu_choice == '6':
-            MenuInput._delete_event(session)
-        elif menu_choice == '7':
-            MenuInput._select_diffent_calendar(session)
-        elif menu_choice == '8':
-            MenuInput._reset_calendar(session)
-        elif menu_choice == '9':
-            MenuInput._exit_session()
-
-    def _create_new_event(session):
+    def get_new_event():
         """
         Executes new_event function from NewEventInput class and
         recieves a tuple object representing user inputted values
-        Gets SQL command from Commands class and adds new event. 
+        Returns tuple of new event values. 
         """
         new_event_values = NewEventInput.new_event()
-        sql_cmd = Command.create_event(session.calendar)
-        session.cursor.execute(sql_cmd, new_event_values)
-        Say.success()
-
-    def _show_all(session):
+        return new_event_values
+        
+    def get_search_params():
         """
-        Generates SQL command string and executes command. Get
-        selection from cursor object, display results as table.
+        Displays search options and asks user to input choice.
+        Depending on choice, request the search parameter from
+        the user. Returns choice and tuple of parameter. 
         """
-        sql_cmd = Command.show_all_events(session.calendar)
-        session.cursor.execute(sql_cmd)
-        results = session.cursor.fetchall()
-        Say.event_table(results)
-
-    def _show_upcoming(session):
-        sql_cmd = Command.show_upcoming_events(session.calendar)
-        session.cursor.execute(sql_cmd)
-        results = session.cursor.fetchall()
-        Say.event_table(results)
-
-    def _show_past(session):
-        sql_cmd = Command.show_past_events(session.calendar)
-        session.cursor.execute(sql_cmd)
-        results = session.cursor.fetchall()
-        Say.event_table(results)
-
-    def _search_events(session):
         Say.search_options()
-        results = validate.verify(input())
-        if results == '1':
-            SearchInput.get_organizer()
-        elif results == '2':
-            SearchInput.get_location()
-        elif results == '3':
-            SearchInput.get_type()
-        elif results == '4':
-            SearchInput.get_date()
-        elif results == '5':
-            SearchInput.get_time()
+        choice = validate.verify(input())
 
-    def _delete_event(session):
-        # List all events, have user enter ID of desired event
-        MenuInput.show_all(session)
+        if choice == '1' or choice == '2':
+            Say.askfor_parameter()
+            param = validate.verify(input())
+        elif choice == '3':
+            Say.askfor_search_date()
+            param = validate.verify_search_date(input())
+        elif choice == '4':
+            Say.askfor_search_time()
+            param = validate.verify_search_time(input())
+
+        return choice, param
+
+    def get_delete_event(session):
+        """
+        Lists all events, have user enter ID of event they would
+        like to delete. Returns ID of selected event. 
+        """
+        MenuAction.show_all(session)
         Say.askfor_id()
         event_id = validate.verify(input())
-        sql_cmd = Command.delete_event(session.calendar)
-        session.cursor.execute(sql_cmd, tuple(event_id))
-        Say.confirm_deleted(event_id)
+        return event_id
 
-    def _select_diffent_calendar(session):
+    def get_diffent_calendar(session):
+        """
+        Displays all calendars and requests user to input ID 
+        of the calendar they would like to change to.
+        Returns ID of selected calendar.
+        """
         sql_cmd = Command.show_all_calendars()
         session.cursor.execute(sql_cmd)
         results = session.cursor.fetchall()
         Say.calendar_table(results)
         Say.askfor_id()
         calendar_id = validate.verify(input())
-        sql_calendar_select = Command.select_calendar()
-        session.cursor.execute(sql_calendar_select, calendar_id)
-        new_calendar = session.cursor.fetchone()
-        session.select_diffent_calendar(new_calendar)
-        Say.selected_calendar(new_calendar)
-
-    def _reset_calendar(session):
+        return calendar_id
+        
+    def confirm_reset():
+        """
+        Displays confirmation message and asks user to confirm.
+        Returns user's response. 
+        """
         Say.confirm_reset()
         confirm = input().lower()
-        if confirm == 'y':
-            sql_cmd = Command.delete_all_events(session.calendar)
-            session.cursor.execute(sql_cmd)
-        else:
-            Say.action_aborted()
-
-    def _exit_session():
-        pass
-
-class SearchInput:
-    """
-    Class containing functions to request input from user
-    about a search they would like to perform. 
-    """
-    
-    def get_organizer():
-        pass
-
-    def get_location():
-        pass
-
-    def get_type():
-        pass
-
-    def get_date():
-        # on date
-        # before date
-        # after date
-        pass
-
-    def get_time():
-        # at time
-        # before time
-        # after time
-        pass
+        return confirm
 
 class NewEventInput:
     """
