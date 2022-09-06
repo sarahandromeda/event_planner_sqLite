@@ -1,6 +1,6 @@
-from database.command import Command
+from database.command import SQLCommand
 from display.message import Say
-from input.inputs import MenuInput
+from input.user_inputs import MenuInput
 from database.search import SearchEvents
 
 class MenuAction:
@@ -28,6 +28,7 @@ class MenuAction:
             MenuAction.search_events(session)
 
         elif choice == '6':
+            MenuAction.show_all(session)
             values = MenuInput.get_delete_event(session)
             MenuAction.delete_event(session, values)
 
@@ -43,14 +44,14 @@ class MenuAction:
                 Say.action_aborted()
 
         elif choice == '9':
-            MenuAction.exit_session()
+            return 'exit'
 
     def create_new_event(session, values):
         """
         Accepts a session object and values tuple.
         Generates SQL command and executes with supplied values.
         """
-        sql_cmd = Command.create_event(session.calendar)
+        sql_cmd = SQLCommand.create_event(session.calendar)
         session.cursor.execute(sql_cmd, values)
         session.connection.commit()
         Say.success()
@@ -61,19 +62,19 @@ class MenuAction:
         Generates SQL command string and executes command. Get
         selection from cursor object, display results as table.
         """
-        sql_cmd = Command.show_all_events(session.calendar)
+        sql_cmd = SQLCommand.show_all_events(session.calendar)
         session.cursor.execute(sql_cmd)
         results = session.cursor.fetchall()
         Say.event_table(results)
 
     def show_upcoming(session):
-        sql_cmd = Command.show_upcoming_events(session.calendar)
+        sql_cmd = SQLCommand.show_upcoming_events(session.calendar)
         session.cursor.execute(sql_cmd)
         results = session.cursor.fetchall()
         Say.event_table(results)
 
     def show_past(session):
-        sql_cmd = Command.show_past_events(session.calendar)
+        sql_cmd = SQLCommand.show_past_events(session.calendar)
         session.cursor.execute(sql_cmd)
         results = session.cursor.fetchall()
         Say.event_table(results)
@@ -83,21 +84,20 @@ class MenuAction:
         Say.event_table(results)
 
     def delete_event(session, event_id):
-        sql_cmd = Command.delete_event(session.calendar)
+        sql_cmd = SQLCommand.delete_event(session.calendar)
         session.cursor.execute(sql_cmd, tuple(event_id))
         Say.confirm_deleted(event_id)
 
     def select_different_calendar(session, calendar_id):
-        sql_calendar_select = Command.select_calendar()
+        sql_calendar_select = SQLCommand.select_calendar()
         session.cursor.execute(sql_calendar_select, calendar_id)
         new_calendar = session.cursor.fetchone()
         session.change_calendar(new_calendar)
         Say.selected_calendar(new_calendar)
 
     def delete_all(session):
-        sql_cmd = Command.delete_all_events(session.calendar)
+        sql_cmd = SQLCommand.delete_all_events(session.calendar)
         session.cursor.execute(sql_cmd)
         Say.success()
 
-    def exit_session():
-        pass
+        

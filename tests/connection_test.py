@@ -2,15 +2,15 @@ import unittest
 from unittest import TestCase
 import os
 from config import settings
-from database.connection import Connection
+from database.connection import DBConnection
 
 """
 Tests components of connection.py file.
 """
 
-class ConnectionTest(TestCase):
+class DBConnectionTest(TestCase):
     def setUp(self):
-        self.new_conn = Connection.create_connection('new.db')
+        self.new_conn = DBConnection.create_connection('new.db')
         self.database_folder = os.path.join(
             settings.ROOT_DIR,
             settings.DB_FILE_LOCATION

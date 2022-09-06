@@ -1,5 +1,4 @@
-# Make this class a mixin for class MainSession
-class Command:
+class SQLCommand:
     """
     Collection of strings of SQL database execution
     statements. Functions take arguments to be interpolated
@@ -9,28 +8,69 @@ class Command:
     def create_calendar(calendar_name):
         create_table = f"""
             CREATE TABLE IF NOT EXISTS {calendar_name} (
+                event_id integer PRIMARY KEY,
                 event_name text NOT NULL,
-                event_type text NOT NULL,
-                organizer text NOT NULL,
-                location text NOT NULL,
+                event_type_id integer,
+                organizer_id integer,
+                state_id integer,
+                city_id integer,
                 date text NOT NULL,
-                time text NOT NULL
-                );
+                time text NOT NULL,
+                FOREIGN KEY (event_type_id)
+                    REFERENCES event_types (event_type_id)
+                    ON DELETE SET NULL,
+                FOREIGN KEY (organizer_id)
+                    REFERENCES organizers (organizer_id)
+                    ON DELETE SET NULL,
+                FOREIGN KEY (state_id)
+                    REFERENCES states_countries (state_id)
+                    ON DELETE SET NULL,
+                FOREIGN KEY (city_id)
+                    REFERENCES cities (city_id)
+                    ON DELETE SET NULL,
+            );
         """
         return create_table
 
     def create_event(calendar_name):    
         create_entry = f"""
-            INSERT INTO {calendar_name} (event_name, event_type, organizer, location, date, time)
-            VALUES(?,?,?,?,date(?),time(?))
+            INSERT INTO calendar (
+                event_name, 
+                event_type_id, 
+                organizer_id, 
+                state_id, 
+                city_id, 
+                date, 
+                time
+                )
+            SELECT
+                ?,
+                t.type_id,
+                o.organizer_id,
+                s.state_id,
+                c.city_id,
+                date(?),
+                time(?)
+            FROM 
+                event_types AS t,
+                organizers AS o,
+                states_countries AS s,
+                cities AS c
+            WHERE
+                t.event_type = ? AND
+                o.organizer = ? AND
+                s.state_country = ? AND
+                c.city = ?
+            ;
         """
+        # Where the first '?' shall represent the event_name
         return create_entry
 
     def update_event(calendar_name):
         update_entry = f"""
             UPDATE {calendar_name}
             SET event_name = ?,
-                event_type = ?,
+                event_type_id = ?,
                 organizer = ?,
                 location = ?,
                 date = ?,
@@ -280,3 +320,17 @@ class Command:
                 time DESC;
         """
         return query_by_upcoming
+
+    def select_event_types():
+        """
+        Selects all event types in related table
+        to display as menu option.
+        """
+        select_types = """
+            SELECT
+                event_type_id,
+                event_type
+            FROM 
+                event_types;
+        """
+        return select_types

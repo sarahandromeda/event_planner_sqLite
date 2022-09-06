@@ -70,10 +70,11 @@ your data. Use with caution.
         print("""
 Please enter a number corresponding to a field to search by.
 
-    1) Search by Organizer*      3) Search by Date
+    1) Search by Organizer*      4) Search by Date
 
-    2) Search by Location*       4) Search by Time
+    2) Search by Location*       5) Search by Time
 
+    3) Search by Type
         
 *When searching by these fields, you can enter the full 
 value or just a single letter to return events that have 
@@ -153,20 +154,37 @@ the letter 'c'.
         print('\nPlease enter name of event.\n')
 
     def askfor_event_type():
-        print(
-            "\nPlease enter the type of the event.\n" +
-            "Ex. Party, Reunion, Convention, Festival, etc.\n")
+        print("""
+Please enter the number corresponding to type of the event.
+
+    0) Concert             6) Party
+
+    1) Conference          7) Seminar
+
+    2) Convention          8) Sports/Competition
+
+    3) Exhibition          9) Trade Show/Product Launch
+
+    4) Festival            10) Wedding
+
+    5) Graduation
+            """)
 
     def askfor_organizer():
         print(
             '\nPlease enter the name of the event organizer.\n' + 
-            'Include, at minimum, a first name.\n'
+            'Can be a person, venue, organization, etc.\n'
             )
 
-    def askfor_location():
+    def askfor_state():
         print(
-            '\nPlease enter the location of the event.\n' +
-            'Include, at minimum, the state.\n'
+            '\nPlease enter the state(if US) or country the event\n' +
+            'is happening in.\n'
+            )
+
+    def askfor_city():
+        print(
+            '\nPlease enter the city the event is happening in.\n' +
             )
 
     def askfor_date():

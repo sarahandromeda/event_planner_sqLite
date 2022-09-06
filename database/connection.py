@@ -3,11 +3,13 @@ import sqlite3
 from sqlite3 import Error
 import config.settings as settings
 
-class Connection:
+class DBConnection:
     def create_connection(file_name):
         """
         Tries to open a connection the the desired database.
-        Returns connection object if successful else if returns none.
+        Returns connection object if successful.
+        On first run, or if no defaultDB exists in expected
+        folder, defaultDB will be created.
         """
         connection = None
         try:

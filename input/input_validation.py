@@ -17,6 +17,15 @@ class InputVerification:
             response = input()
         return response
 
+    def verify_type(response):
+        while True:
+            if re.match(r"\A[1]?[0-9]\Z", response):
+                break
+            else:
+                Say.invalid_input(response)
+                response = input()
+        return response
+
     def verify_date(response):
         while True:
             try:
@@ -43,6 +52,15 @@ class InputVerification:
     def verify_menu(response):
         while True:
             if re.match(r"\A[1-9]\Z", response):
+                break
+            else:
+                Say.invalid_input(response)
+                response = input()
+        return response
+
+    def verify_search_menu(response):
+        while True:
+            if re.match(r"\A[1-5]\Z", response):
                 break
             else:
                 Say.invalid_input(response)

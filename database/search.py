@@ -1,5 +1,5 @@
-from database.command import Command
-from input.inputs import MenuInput
+from database.command import SQLCommand
+from input.user_inputs import MenuInput
 
 class SearchEvents:
     pass 
@@ -44,30 +44,30 @@ class SearchEvents:
         Executes command using cursor and returns results. 
         """
         if self.choice == '1':
-            cmd_string = Command.search_by_organizer(self.calendar)
+            cmd_string = SQLCommand.search_by_organizer(self.calendar)
 
         elif self.choice == '2':
-            cmd_string = Command.search_by_location(self.calendar)
+            cmd_string = SQLCommand.search_by_location(self.calendar)
 
         elif self.choice == '3':
             if self.modifier == '+':
-                cmd_string = Command.search_after_date(self.calendar)
+                cmd_string = SQLCommand.search_after_date(self.calendar)
 
             elif self.modifier == '-':
-                cmd_string = Command.search_before_date(self.calendar)
+                cmd_string = SQLCommand.search_before_date(self.calendar)
 
             else:
-                cmd_string = Command.search_by_date(self.calendar)
+                cmd_string = SQLCommand.search_by_date(self.calendar)
 
         elif self.choice == '4':
             if self.modifier == '+':
-                cmd_string = Command.search_after_time(self.calendar)
+                cmd_string = SQLCommand.search_after_time(self.calendar)
 
             elif self.modifier == '-':
-                cmd_string = Command.search_before_time(self.calendar)
+                cmd_string = SQLCommand.search_before_time(self.calendar)
 
             else:
-                cmd_string = Command.search_by_time(self.calendar)
+                cmd_string = SQLCommand.search_by_time(self.calendar)
 
         self.cursor.execute(cmd_string, self.param)
         results = self.cursor.fetchall()
